@@ -7,7 +7,7 @@ This utility uses my <a href="https://github.com/gimbas/cp2130">cp2130 driver</a
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+### Compile Prerequisites
 
 - You will need root access to a Linux machine.
 - You will need to install libusb
@@ -47,6 +47,54 @@ See the [Makefile](Makefile) for more information on compile flags etc.
 sudo cp icecream.rules /etc/udev/rules.d
 ```
 - Depending on your user permissions, you might need to run the compilled binary with root access (sudo)
+
+```
+Usage: icecream-c] <input file>
+       icecream -r|-R<bytes> <output file>
+       icecream -S <input file>
+       icecream -t
+
+General options:
+  -d <device string>    use the specified USB device [default: i:0x0403:0x6010]
+                          i:<vendor>:<product>         (e.g. i:0x0403:0x6010)
+  -o <offset in bytes>  start address for read/write [default: 0]
+                          (append 'k' to the argument for size in kilobytes
+                          or 'M' for size in megabytes)
+  -s                    slow SPI (375kHz instead of 12MHz)
+  -v                    verbose output
+
+Mode of operation:
+  [default]             write file contents to flash, then verify
+  -r                    read first 256 kB from flash and write to file
+  -R <size in bytes>    read the specified number of bytes from flash
+                          (append 'k' to the argument for size in kilobytes
+                          or 'M' for size in megabytes)
+  -c                    do not write flash, only verify (`check')
+  -S                    perform SRAM programming
+  -t                    just read the flash ID sequence
+
+Erase mode (only meaningful in default mode):
+  [default]             erase aligned chunks of 64kB in write mode
+                          This means that some data after the written data (or
+                          even before when -o is used) may be erased as well.
+  -b                    bulk erase entire flash before writing
+  -e <size in bytes>    erase flash as if we were writing that number of bytes
+  -n                    do not erase flash before writing
+  -p                    disable write protection before erasing or writing
+                          This can be useful if flash memory appears to be
+                          bricked and won't respond to erasing or programming.
+
+Miscellaneous options:
+      --help            display this help and exit
+  --                    treat all remaining arguments as filenames
+
+Exit status:
+  0 on success,
+  1 if a non-hardware error occurred (e.g., failure to read from or write to a file, 
+    or invoked with invalid options),
+  2 if communication with the hardware failed (e.g., cannot find the USB device),
+  3 if verification of the data failed.
+```
 
 ## Authors
 
